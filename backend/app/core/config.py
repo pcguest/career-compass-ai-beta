@@ -33,8 +33,10 @@ class Settings(BaseSettings):
     
     # CORS Settings
     CORS_ORIGINS: List[AnyHttpUrl] = [
-        "http://localhost:5173",  # Frontend development server
-        "http://localhost:4173",  # Frontend preview server
+        "http://localhost:5000",   # Frontend development server
+        "http://0.0.0.0:5000",     # Frontend development server (external)
+        "https://*.replit.dev",    # Replit hosting
+        "https://*.replit.co",     # Replit hosting
     ]
     
     # Database Settings
@@ -87,10 +89,16 @@ class Settings(BaseSettings):
             return v
         
         values = info.data if hasattr(info, 'data') else {}
+        
+        # URL encode the password to handle special characters
+        from urllib.parse import quote_plus
+        password = values.get("POSTGRES_PASSWORD", "")
+        encoded_password = quote_plus(password) if password else ""
+        
         return PostgresDsn.build(
             scheme="postgresql",
             username=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
+            password=encoded_password,
             host=values.get("POSTGRES_SERVER"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )

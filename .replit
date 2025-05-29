@@ -37,21 +37,13 @@ task = "shell.exec"
 args = "bash launch.sh"
 
 [[ports]]
-localPort = 5173
+localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 5174
-externalPort = 3003
-
-[[ports]]
-localPort = 5175
+localPort = 5001
 externalPort = 3000
 
 [[ports]]
-localPort = 5176
+localPort = 8000
 externalPort = 3001
-
-[[ports]]
-localPort = 5177
-externalPort = 3002

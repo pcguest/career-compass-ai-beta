@@ -21,4 +21,4 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
 echo "🔧 Starting frontend server..."
 # Return to frontend and start Vite
 cd ../frontend
-npm run dev -- --host 0.0.0.0 --port 5173
+npm run dev -- --host 0.0.0.0 --port 5000
