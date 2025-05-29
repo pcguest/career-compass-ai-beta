@@ -1,92 +1,143 @@
-import { ArrowRight, Check, Compass, Sparkles, Target, Users } from 'lucide-react'
+import { ArrowRight, Check, Compass, Sparkles, Target, Users, Brain, FileText, CheckCircle, Search, TrendingUp, Award, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { SearchFilters } from '../components/common/SearchFilters'
 
 const HomePage = () => {
+  const stats = [
+    { number: '10K+', label: 'Jobs Analyzed' },
+    { number: '95%', label: 'Success Rate' },
+    { number: '5K+', label: 'Happy Users' },
+    { number: '500+', label: 'Companies' }
+  ]
+
+  const features = [
+    {
+      icon: Brain,
+      title: 'AI-Powered Analysis',
+      description: 'Advanced AI evaluates your resume against job requirements and provides actionable insights.'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Career Growth',
+      description: 'Track your progress and get personalized recommendations for career advancement.'
+    },
+    {
+      icon: Award,
+      title: 'Success Guarantee',
+      description: 'Our proven methodology has helped thousands land their dream jobs.'
+    },
+    {
+      icon: Zap,
+      title: 'Instant Results',
+      description: 'Get detailed feedback and improvement suggestions in seconds, not days.'
+    }
+  ]
+
   return (
-    <div>
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
-        <div className="container-content py-20 md:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                Navigate Your Career Journey with AI-Powered Guidance
+      <section className="relative bg-gradient-to-br from-brand-50 via-primary-50 to-secondary-50 py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f1f5f9" fill-opacity="0.4"%3E%3Ccircle cx="7" cy="7" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+
+        <div className="container-content relative">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="animate-fade-in">
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-brand-100 text-brand-700 rounded-full text-sm font-medium mb-6">
+                <Zap className="w-4 h-4" />
+                AI-Powered Career Intelligence
+              </span>
+              <h1 className="text-display-2xl text-gray-900 leading-tight mb-6">
+                Land Your Dream Job with{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-primary-600">
+                  AI-Powered
+                </span>{' '}
+                Career Guidance
               </h1>
-              <p className="text-xl text-primary-100 max-w-lg">
-                Get personalized insights on your resume, job applications, and interview preparation with advanced AI analysis.
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                Get personalized feedback on your job applications, optimize your resume with AI insights, 
+                and discover opportunities that perfectly match your skills and career goals.
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link 
-                  to="/register" 
-                  className="px-6 py-3 bg-white text-primary-700 rounded-md font-medium hover:bg-gray-100 transition-colors"
-                >
-                  Get Started Free
-                </Link>
-                <Link 
-                  to="/about" 
-                  className="px-6 py-3 bg-primary-700 text-white rounded-md font-medium hover:bg-primary-800 transition-colors flex items-center"
-                >
-                  Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Link to="/job-analysis" className="btn-brand text-lg px-8 py-4 shadow-lg">
+                Start Free Analysis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+              <Link to="/about" className="btn-outline text-lg px-8 py-4">
+                Watch Demo
+              </Link>
+            </div>
+
+            {/* Search Bar */}
+            <div className="max-w-3xl mx-auto">
+              <SearchFilters />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="container-content">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="stats-card animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="stats-number">{stat.number}</div>
+                <div className="stats-label">{stat.label}</div>
               </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="relative z-10 bg-white rounded-lg shadow-xl overflow-hidden">
-                <img 
-                  src="https://images.pexels.com/photos/3183186/pexels-photo-3183186.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                  alt="Career Compass Dashboard" 
-                  className="w-full h-auto"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end">
-                  <div className="p-6">
-                    <p className="text-white font-medium">AI-Powered Job Analysis Dashboard</p>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-accent-500 rounded-full opacity-20 blur-3xl -z-10"></div>
-            </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container-content">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">AI-Powered Career Guidance</h2>
-            <p className="text-xl text-gray-600">
-              CareerCompassAI uses advanced artificial intelligence to analyze your career materials and provide actionable insights.
+          <div className="section-header">
+            <h2 className="section-title">
+              Why Choose CareerCompassAI?
+            </h2>
+            <p className="section-subtitle">
+              Our AI-powered platform provides comprehensive insights and tools to accelerate your career success.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-gray-50 rounded-xl p-8 border border-gray-100 hover:border-primary-200 hover:shadow-md transition-all"
-              >
-                <div className="bg-primary-100 rounded-lg w-12 h-12 flex items-center justify-center text-primary-600 mb-6">
-                  {feature.icon}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              return (
+                <div 
+                  key={index} 
+                  className="feature-card animate-scale-in group"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="feature-icon group-hover:scale-110 transition-transform duration-200">
+                    <Icon className="w-full h-full" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </motion.div>
-            ))}
+              )
+            })}
+          </div>
+
+          {/* Feature Highlight */}
+          <div className="mt-20 bg-gradient-to-r from-brand-600 to-primary-600 rounded-2xl p-12 text-center text-white">
+            <h3 className="text-display-md mb-4">Ready to Transform Your Career?</h3>
+            <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+              Join thousands of successful job seekers who have accelerated their career growth with our AI-powered insights.
+            </p>
+            <Link to="/job-analysis" className="inline-flex items-center gap-2 bg-white text-brand-600 px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105">
+              Get Started Free
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
         </div>
       </section>
@@ -199,39 +250,6 @@ const HomePage = () => {
 }
 
 // Data
-const features = [
-  {
-    title: "AI Resume Analysis",
-    description: "Get detailed feedback on your resume with AI-powered analysis that highlights strengths and improvement areas.",
-    icon: <Sparkles className="h-6 w-6" />
-  },
-  {
-    title: "Job Fit Evaluation",
-    description: "See how well your skills and experience match job descriptions with our sophisticated matching algorithm.",
-    icon: <Target className="h-6 w-6" />
-  },
-  {
-    title: "Interview Preparation",
-    description: "Prepare for interviews with AI-generated questions based on the job description and your experience.",
-    icon: <Users className="h-6 w-6" />
-  },
-  {
-    title: "Career Path Guidance",
-    description: "Receive personalized recommendations for skills to develop based on your career goals.",
-    icon: <Compass className="h-6 w-6" />
-  },
-  {
-    title: "Application Tracking",
-    description: "Keep track of all your job applications and their status in one organized dashboard.",
-    icon: <Check className="h-6 w-6" />
-  },
-  {
-    title: "Salary Insights",
-    description: "Get data-driven salary insights for your industry, location, and experience level.",
-    icon: <Sparkles className="h-6 w-6" />
-  }
-]
-
 const steps = [
   {
     title: "Upload Your Resume",

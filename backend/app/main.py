@@ -34,9 +34,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Database connection failed: {e}")
         raise
-    
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down CareerCompassAI API")
 
@@ -66,14 +66,14 @@ async def request_middleware(request: Request, call_next):
     """Middleware for request logging and timing."""
     request_id = str(uuid.uuid4())
     start_time = time.time()
-    
+
     # Add request context to logger
     logger.bind(**log_request_middleware(request_id))
-    
+
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        
+
         logger.info(
             "request_processed",
             path=request.url.path,
@@ -81,11 +81,11 @@ async def request_middleware(request: Request, call_next):
             status_code=response.status_code,
             duration=f"{process_time:.3f}s"
         )
-        
+
         response.headers["X-Request-ID"] = request_id
         response.headers["X-Process-Time"] = str(process_time)
         return response
-        
+
     except Exception as e:
         logger.error(
             "request_failed",
@@ -136,7 +136,7 @@ async def health_check() -> Dict[str, Any]:
         # Check database connection
         async with SessionLocal() as db:
             await db.execute("SELECT 1")
-        
+
         return {
             "status": "healthy",
             "timestamp": time.time(),
@@ -168,24 +168,24 @@ async def evaluate_job(
 ) -> JobEvaluationResponse:
     """
     Evaluates job fit using AI analysis.
-    
+
     Args:
         request: Job evaluation request containing job description and background
         req: FastAPI request object for rate limiting
-        
+
     Returns:
         Detailed job evaluation response
-        
+
     Raises:
         HTTPException: For rate limiting or processing errors
     """
     try:
         evaluator = JobEvaluator()
         result = await evaluator.evaluate_job(request)
-        
+
         # Save evaluation to database asynchronously
         # This would be implemented in a real application
-        
+
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -204,13 +204,13 @@ async def evaluate_job(
 async def get_evaluation(evaluation_id: str) -> JobEvaluationResponse:
     """
     Retrieves a specific job evaluation by ID.
-    
+
     Args:
         evaluation_id: Unique identifier for the evaluation
-        
+
     Returns:
         The requested job evaluation
-        
+
     Raises:
         HTTPException: If evaluation is not found
     """
@@ -223,3 +223,17 @@ async def get_evaluation(evaluation_id: str) -> JobEvaluationResponse:
             status_code=404,
             detail=f"Evaluation {evaluation_id} not found"
         )
+@app.post(
+    "/analyze-job-application",
+    response_model=dict,
+    status_code=200,
+    summary="Analyze job application",
+    description="Analyze resume against job description and provide detailed feedback"
+)
+async def analyze_job_application(
+    request: Request,
+    job_description: str = Form(...),
+    resume_text: str = Form(...),
+    background_check: bool = Form(False)
+):
+    pass

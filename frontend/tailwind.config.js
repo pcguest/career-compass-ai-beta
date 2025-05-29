@@ -20,6 +20,33 @@ export default {
           900: '#1E3A8A',
           950: '#172554',
         },
+        brand: {
+          50: '#F0F9FF',
+          100: '#E0F2FE',
+          200: '#BAE6FD',
+          300: '#7DD3FC',
+          400: '#38BDF8',
+          500: '#0EA5E9',
+          600: '#0284C7',
+          700: '#0369A1',
+          800: '#075985',
+          900: '#0C4A6E',
+          950: '#082F49',
+        },
+        neutral: {
+          25: '#FCFCFD',
+          50: '#F9FAFB',
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          300: '#D1D5DB',
+          400: '#9CA3AF',
+          500: '#6B7280',
+          600: '#4B5563',
+          700: '#374151',
+          800: '#1F2937',
+          900: '#111827',
+          950: '#030712',
+        },
         secondary: {
           50: '#F0FDFA',
           100: '#CCFBF1',
@@ -111,6 +138,12 @@ export default {
         '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
         '5xl': ['3rem', { lineHeight: '1' }],
         '6xl': ['3.75rem', { lineHeight: '1' }],
+        'display-xs': ['1.5rem', { lineHeight: '2rem', fontWeight: '600' }],
+        'display-sm': ['1.875rem', { lineHeight: '2.375rem', fontWeight: '600' }],
+        'display-md': ['2.25rem', { lineHeight: '2.75rem', fontWeight: '600' }],
+        'display-lg': ['3rem', { lineHeight: '3.75rem', fontWeight: '600' }],
+        'display-xl': ['3.75rem', { lineHeight: '4.5rem', fontWeight: '600' }],
+        'display-2xl': ['4.5rem', { lineHeight: '5.625rem', fontWeight: '600' }],
       },
       spacing: {
         '0': '0',
@@ -153,6 +186,10 @@ export default {
         'slide-up': 'slideUp 0.5s ease-out',
         'slide-down': 'slideDown 0.5s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+        'scale-in': 'scaleIn 0.2s ease-out',
+        'slide-in-right': 'slideInRight 0.3s ease-out',
+        'shimmer': 'shimmer 2s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -166,6 +203,22 @@ export default {
         slideDown: {
           '0%': { transform: 'translateY(-10px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        bounceGentle: {
+          '0%, 100%': { transform: 'translateY(-2px)' },
+          '50%': { transform: 'translateY(0px)' },
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
         },
       },
       boxShadow: {
