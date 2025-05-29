@@ -95,13 +95,15 @@ class Settings(BaseSettings):
         password = values.get("POSTGRES_PASSWORD", "")
         encoded_password = quote_plus(password) if password else ""
         
-        return PostgresDsn.build(
-            scheme="postgresql",
-            username=values.get("POSTGRES_USER"),
-            password=encoded_password,
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
-        )
+        # Build the PostgreSQL URI
+        user = values.get("POSTGRES_USER", "")
+        host = values.get("POSTGRES_SERVER", "")
+        db = values.get("POSTGRES_DB", "")
+        
+        if not all([user, host, db]):
+            raise ValueError("Missing required database configuration")
+        
+        return f"postgresql+asyncpg://{user}:{encoded_password}@{host}/{db}"
     
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
