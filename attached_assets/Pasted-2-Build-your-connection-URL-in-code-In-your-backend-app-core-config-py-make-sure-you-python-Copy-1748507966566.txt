@@ -1,0 +1,80 @@
+2. Build your connection URL in code
+In your backend/app/core/config.py, make sure you:
+
+python
+Copy
+Edit
+from pydantic_settings import BaseSettings, Field
+
+class Settings(BaseSettings):
+    postgres_server: str = Field(..., env="POSTGRES_SERVER")
+    postgres_user: str   = Field(..., env="POSTGRES_USER")
+    postgres_password: str = Field(..., env="POSTGRES_PASSWORD")
+    postgres_db: str     = Field(..., env="POSTGRES_DB")
+    database_url: str = Field(None, env="DATABASE_URL")
+
+    @property
+    def db_url(self) -> str:
+        if self.database_url:
+            return self.database_url
+        return (
+            f"postgresql://{self.postgres_user}"
+            f":{self.postgres_password}"
+            f"@{self.postgres_server}:5432/"
+            f"{self.postgres_db}"
+        )
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+This will let you do engine = create_async_engine(settings.db_url, …).
+
+3. Wire up your DatabaseManager
+In backend/app/services/database.py (or wherever you manage Supabase/SQLAlchemy):
+
+Use settings.db_url when instantiating your client or engine.
+
+Test in your health-check endpoint that you can open—then close—a connection or run a simple SELECT 1.
+
+4. Run your schema migrations (if any)
+If you have SQL scripts or use a migration tool (e.g. Alembic, Prisma), deploy your job_evaluations table and RLS policies to Supabase:
+
+sql
+Copy
+Edit
+-- Example:
+CREATE TABLE job_evaluations (...);
+ALTER TABLE job_evaluations ENABLE ROW LEVEL SECURITY;
+-- etc.
+You can paste your SQL into the Supabase dashboard’s SQL editor.
+
+5. Update your FastAPI health-check to verify DB
+Modify your /health route to include something like:
+
+python
+Copy
+Edit
+@app.get("/health")
+async def health_check():
+    try:
+        # run a quick SQL test
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        db_ok = True
+    except:
+        db_ok = False
+
+    return {"api": "ok", "db": "ok" if db_ok else "error"}
+Deploy and hit /health to confirm both your app and database connections are up.
+
+6. Implement your data-access methods
+Now that the connection works, build out:
+
+save_evaluation(...)
+
+get_evaluation_by_id(...)
+
+get_user_evaluations(...)
+
+using your Supabase client or SQLAlchemy ORM, as per your design.
