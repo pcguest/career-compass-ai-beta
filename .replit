@@ -25,4 +25,4 @@ args = "cd backend && pip install -r requirements.txt"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "cd frontend && npm run dev"
