@@ -80,11 +80,13 @@ class Settings(BaseSettings):
     SIMILARITY_THRESHOLD: float = 0.75
     
     @field_validator("DATABASE_URI", mode="before")
-    def assemble_db_connection(cls, v: Optional[str], values: dict) -> Any:
+    @classmethod
+    def assemble_db_connection(cls, v: Optional[str], info) -> Any:
         """Constructs database URI from components or returns existing URI."""
         if isinstance(v, str):
             return v
         
+        values = info.data if hasattr(info, 'data') else {}
         return PostgresDsn.build(
             scheme="postgresql",
             username=values.get("POSTGRES_USER"),
@@ -94,6 +96,7 @@ class Settings(BaseSettings):
         )
     
     @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
         """Processes CORS origins from string or list input."""
         if isinstance(v, str):
