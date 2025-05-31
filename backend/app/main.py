@@ -13,6 +13,8 @@ from .core.config import settings
 from .core.logger import configure_logging, get_logger, log_request_middleware
 from .services.ai.ai_evaluator import JobEvaluator, JobEvaluationRequest, JobEvaluationResponse
 from .db.session import SessionLocal
+from .api.endpoints import analysis
+from fastapi import Form
 
 # Configure logging
 configure_logging()
@@ -117,6 +119,9 @@ async def general_exception_handler(request: Request, exc: Exception):
             "detail": "An unexpected error occurred"
         }
     )
+
+# Include routers
+app.include_router(analysis.router, prefix="/api", tags=["analysis"])
 
 @app.get("/")
 async def root() -> Dict[str, Any]:
@@ -223,6 +228,7 @@ async def get_evaluation(evaluation_id: str) -> JobEvaluationResponse:
             status_code=404,
             detail=f"Evaluation {evaluation_id} not found"
         )
+
 @app.post(
     "/analyze-job-application",
     response_model=dict,
