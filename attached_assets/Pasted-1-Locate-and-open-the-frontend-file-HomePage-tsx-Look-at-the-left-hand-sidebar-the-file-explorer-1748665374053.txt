@@ -1,0 +1,294 @@
+1. Locate and open the frontend file (HomePage.tsx)
+Look at the left-hand sidebar (the file explorer). You should see two top-level folders named backend and frontend.
+
+Click the little arrow (▶) or double-click on frontend to expand it. You’ll see folders like:
+
+java
+Copy
+Edit
+frontend
+├── node_modules
+├── public
+├── src
+├── package.json
+└── ...
+Expand the src folder by clicking on it (click the arrow or double-click it). Inside, you’ll see:
+
+css
+Copy
+Edit
+src
+├── components
+├── pages
+├── styles
+└── ...
+Expand the pages folder. Now you should see a file called HomePage.tsx (or something similar if your page is named differently).
+
+Click on HomePage.tsx. That will open it in the main editor area (center panel).
+
+What you’ll see in HomePage.tsx:
+Somewhere in this file is an <img> (or <svg>) tag whose src attribute uses a data:image/svg+xml;utf8,… string containing unescaped double quotes. That’s what broke your JSX. We need to change that line so the inner quotes are properly escaped or wrapped with backticks.
+
+1.1. Edit HomePage.tsx
+Scroll until you find the line that looks like one of these examples (notice the fill="white" inside a src="…"):
+
+tsx
+Copy
+Edit
+<img
+  className="logo"
+  src="data:image/svg+xml;utf8,<svg viewBox='0 0 100 100' fill="white" xmlns='http://www.w3.org/2000/svg'>…</svg>"
+  alt="Logo"
+/>
+Replace that entire src="…" line with a backtick‐wrapped template literal so that the inner quotes won’t break JSX. For example:
+
+diff
+Copy
+Edit
+- <img
+-   className="logo"
+-   src="data:image/svg+xml;utf8,<svg viewBox='0 0 100 100' fill="white" xmlns='http://www.w3.org/2000/svg'>…</svg>"
+-   alt="Logo"
+- />
++ <img
++   className="logo"
++   src={`data:image/svg+xml;utf8,<svg viewBox='0 0 100 100' fill='white' xmlns='http://www.w3.org/2000/svg'>…</svg>`}
++   alt="Logo"
++ />
+Key points:
+
+The outer opening becomes src={`...`} (backticks inside the {}).
+
+Inside those backticks, any attributes (viewBox='0 0 100 100' or fill='white') must use single quotes so they don’t conflict with the backticks.
+
+The goal is to eliminate any unescaped " inside a src="something".
+
+Save the file (⌘S on Mac, Ctrl+S on Windows). After you save, you should see a little “●” next to the filename in the tab, and the file should now appear under the “Git” pane as modified.
+
+2. Locate and open the backend file (main.py)
+In the same file explorer, click the arrow next to backend to expand it. You’ll see something like:
+
+pgsql
+Copy
+Edit
+backend
+├── app
+│   ├── __pycache__
+│   ├── api
+│   ├── core
+│   ├── db
+│   │   ├── __pycache__
+│   │   ├── init_db.py
+│   │   └── session.py
+│   ├── schemas
+│   ├── services
+│   └── main.py         ← this is the file we need
+├── .env.example
+├── database_schema.sql
+├── README.md
+└── requirements.txt
+Click on main.py (inside backend/app). That will open the FastAPI application’s main file in the editor.
+
+2.1. Edit main.py to fix the route signature
+At the very top of main.py, you might see imports like:
+
+python
+Copy
+Edit
+from fastapi import FastAPI, Depends, Form, HTTPException, Request
+from sqlalchemy.orm import Session
+from .dependencies import get_db
+from .schemas import JobApplicationModel
+If you see Form in your import line but you never used it, remove Form from that import. So change this:
+
+diff
+Copy
+Edit
+- from fastapi import FastAPI, Depends, Form, HTTPException, Request
++ from fastapi import FastAPI, Depends, HTTPException, Request
+Scroll down until you find the route definition for /analyze-job-application. It probably looks something like this (but incorrectly uses Depends for both db and request):
+
+python
+Copy
+Edit
+@app.post("/analyze-job-application")
+async def analyze_job_application(
+    job_data: JobApplicationModel,
+    db: Depends(get_db),
+    request: Depends(Request)
+):
+    # …
+Replace that incorrect signature with a correct one. Specifically, you want:
+
+db to be typed as Session = Depends(get_db)
+
+request to be typed simply as Request (no Depends())
+
+Make sure you import Request from fastapi.
+
+For example, change to:
+
+diff
+Copy
+Edit
+- @app.post("/analyze-job-application")
+- async def analyze_job_application(
+-     job_data: JobApplicationModel,
+-     db: Depends(get_db),
+-     request: Depends(Request)
+- ):
++ @app.post("/analyze-job-application")
++ async def analyze_job_application(
++     job_data: JobApplicationModel,
++     db: Session = Depends(get_db),
++     request: Request
++ ):
+    """
+    Receives a job application payload, analyzes it, and returns a score/feedback.
+    """
+    if not job_data.resume_text:
+        raise HTTPException(status_code=400, detail="Resume text is required.")
+
+    result = analyze_resume(job_data.resume_text, db)
+    return {"score": result.score, "feedback": result.feedback}
+Save main.py (⌘S or Ctrl+S). Now that file should also appear as “modified” in the Git pane.
+
+3. Commit & Push Changes
+Once you’ve saved both files (HomePage.tsx and main.py), we need to commit them to Git and push to GitHub so everything stays in sync.
+
+Open the Git pane on the right side of Replit (click the Git icon if it’s not already visible).
+
+You should now see two files in “Changes to commit”:
+
+bash
+Copy
+Edit
+M  frontend/src/pages/HomePage.tsx
+M  backend/app/main.py
+In the “Commit message” box at the top of that pane, type a concise, descriptive message. For example:
+
+javascript
+Copy
+Edit
+fix: escape SVG quotes in HomePage.tsx & correct FastAPI route signature
+Click Commit & Push.
+
+Replit will create a new commit locally with both modifications and immediately push it to GitHub.
+
+Once the push completes, you’ll see “Nothing to pull or push” again—meaning your Replit workspace and GitHub repo are now fully synchronized.
+
+4. Re-Run Your Frontend and Backend to Verify
+After committing and pushing, let’s confirm that both the React front end and the FastAPI back end start up without errors.
+
+4.1 Frontend (React/TypeScript)
+In your Replit workspace, locate the Shell/Terminal tab on the left side. If you don’t have a dedicated “frontend” shell open yet, open a new shell and run:
+
+bash
+Copy
+Edit
+cd frontend
+Install dependencies (if necessary):
+
+bash
+Copy
+Edit
+npm install
+Start the dev server:
+
+bash
+Copy
+Edit
+npm run dev
+If your project uses npm start instead, run npm start.
+
+Watch the console logs. Because we fixed the unescaped quotes in HomePage.tsx, you should no longer see a “JSX syntax error.”
+
+In Replit’s Preview pane (the small “browser” window), go to the URL of your running frontend (often something like https://<your‐repl‐name>.repl.co). You should see your landing page load normally, and the SVG “logo” (or whatever element was breaking) should now render correctly.
+
+4.2 Backend (FastAPI)
+Open a second shell or tab in Replit and run:
+
+bash
+Copy
+Edit
+cd backend/app
+Make sure your Python environment has all dependencies installed:
+
+bash
+Copy
+Edit
+pip install -r ../requirements.txt
+Start Uvicorn:
+
+bash
+Copy
+Edit
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+In the logs, look for something like:
+
+pgsql
+Copy
+Edit
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started server process [pid=…]
+INFO:     Application startup complete.
+Because we fixed the route signature (db: Session = Depends(get_db) and request: Request), there should be no dependency‐injection errors.
+
+In Replit’s Preview pane, click the “Open in new tab” or copy the forwarded port URL. Navigate to http://localhost:8000/docs.
+
+In the automatic Swagger UI, find POST /analyze-job-application, click Try it out, and send a minimal JSON payload, for example:
+
+json
+Copy
+Edit
+{
+  "resume_text": "Sample resume text to analyze"
+}
+You should get back a 200 response with something like:
+
+json
+Copy
+Edit
+{
+  "score": 85,
+  "feedback": "Your resume is well‐structured, but consider adding more details to highlights."
+}
+If you still see a 422 or a 500 error referencing Depends, re-open main.py to ensure you exactly match the pattern db: Session = Depends(get_db) and request: Request. Save, commit, and restart Uvicorn.
+
+5. Final Check: Git Says “Nothing to Pull or Push”
+Now that both front end and back end run without errors, return to the Git pane.
+
+It should read “Nothing to pull or push.”
+
+If you want to double-check on GitHub, open your repository page (github.com/<your-username>/career-compass-ai-beta) in a browser.
+
+The latest commit at the top should be exactly the message you just used (e.g. fix: escape SVG quotes in HomePage.tsx & correct FastAPI route signature).
+
+Click into frontend/src/pages/HomePage.tsx and backend/app/main.py in GitHub to confirm the changes are present.
+
+At this point, everything is synchronized:
+
+Your Replit workspace files have the fixes.
+
+The React frontend compiles and renders without JSX errors.
+
+The FastAPI backend starts cleanly and accepts requests to /analyze-job-application.
+
+Git is up-to-date (“Nothing to pull or push”), and GitHub has your latest commit.
+
+Summary of Where You Are and What You Did
+You opened the Replit file explorer, saw frontend and backend.
+
+You opened HomePage.tsx under frontend/src/pages and fixed the unescaped " in the SVG data URI by wrapping it in backticks.
+
+You opened main.py under backend/app and removed the unused Form import, then corrected the FastAPI function signature to use db: Session = Depends(get_db) and request: Request.
+
+You saved both files, saw them show up in Replit’s Git pane, wrote a commit message, and clicked Commit & Push.
+
+You re-ran the frontend (npm run dev) to confirm no more JSX errors.
+
+You re-ran the backend (uvicorn main:app …) to confirm no FastAPI dependency errors.
+
+Git now reports “Nothing to pull or push,” meaning all changes are safely on GitHub.
+
+From here, you can continue building your feature, confident that those two blocking errors are resolved. Let me know if you hit any issues when re-running the servers!
