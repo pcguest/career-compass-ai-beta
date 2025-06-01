@@ -1,6 +1,9 @@
 
 import React, { useState } from 'react'
 import { Upload, FileText, Zap, TrendingUp } from 'lucide-react'
+import { ASCIIDataProcessor } from '../components/ASCII/ASCIIDataProcessor'
+import { CareerLoadingStates } from '../components/ASCII/LoadingStates'
+import { ASCIIProgressBar } from '../components/ASCII/InteractiveASCII'
 
 const JobAnalysisPage = () => {
   const [resumeText, setResumeText] = useState('')
@@ -105,6 +108,23 @@ const JobAnalysisPage = () => {
             </div>
           </div>
 
+          {/* Loading Section */}
+          {isLoading && (
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+              <CareerLoadingStates 
+                type="resume" 
+                progress={Math.min(100, Date.now() % 10000 / 100)} 
+              />
+              <div className="mt-6">
+                <ASCIIDataProcessor
+                  data={resumeText}
+                  visualization="flow"
+                  onProcess={(stage) => console.log('Processing stage:', stage)}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Results Section */}
           {analysis && (
             <div className="bg-white rounded-xl shadow-lg p-8">
@@ -115,16 +135,11 @@ const JobAnalysisPage = () => {
               
               {analysis.match_score && (
                 <div className="mb-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Match Score</span>
-                    <span className="text-sm font-medium text-gray-900">{analysis.match_score}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-brand-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${analysis.match_score}%` }}
-                    ></div>
-                  </div>
+                  <ASCIIProgressBar
+                    progress={analysis.match_score}
+                    label="Match Score"
+                    width={30}
+                  />
                 </div>
               )}
 
